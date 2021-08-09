@@ -3,10 +3,13 @@
 import 'dart:async';
 
 import 'package:cab_driver/brand_colors.dart';
+import 'package:cab_driver/datamodels/driver.dart';
 import 'package:cab_driver/globalvariables.dart';
+import 'package:cab_driver/notifications.dart';
 import 'package:cab_driver/widgets/TaxiButton.dart';
 import 'package:cab_driver/widgets/availability_button.dart';
 import 'package:cab_driver/widgets/confirm_sheet.dart';
+import 'package:cab_driver/widgets/notification_dialog.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -25,8 +28,6 @@ class _HomeTabState extends State<HomeTab> {
   GoogleMapController? mapController;
   Completer<GoogleMapController> _controller = Completer();
 
-  Position? currentPosition;
-
   DatabaseReference? tripRequestRef;
 
   //var geoLocator = Geolocator();
@@ -39,6 +40,10 @@ class _HomeTabState extends State<HomeTab> {
 
   bool isAvailable = false;
 
+  String? ride_id;
+
+  Future<String?>? token;
+
   void getCurrentPosition() async {
     Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.bestForNavigation);
@@ -47,6 +52,27 @@ class _HomeTabState extends State<HomeTab> {
     mapController!.animateCamera(
       CameraUpdate.newLatLng(pos),
     );
+  }
+
+  void getCurrentDriverInfo() async {
+    currentFirebaseUser = FirebaseAuth.instance.currentUser;
+    DatabaseReference driverRef = FirebaseDatabase.instance
+        .reference()
+        .child('drivers/${currentFirebaseUser!.uid}');
+    driverRef.once().then((DataSnapshot snapshot) {
+      if (snapshot.value != null) {
+        currentDriverInfo = Driver.fromSnapshot(snapshot);
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    notif(context);
+    getCurrentDriverInfo();
   }
 
   @override
@@ -95,8 +121,6 @@ class _HomeTabState extends State<HomeTab> {
                           geoLocator = Geolocator.getPositionStream(
                               desiredAccuracy:
                                   LocationAccuracy.bestForNavigation);
-                          goOnline();
-                          getLocationUpdates();
                           Navigator.pop(context);
 
                           setState(() {
@@ -105,18 +129,21 @@ class _HomeTabState extends State<HomeTab> {
                             isAvailable = true;
                             print(isAvailable);
                           });
+                          goOnline();
+                          getLocationUpdates();
                         } else {
                           geoLocator = null;
-                          goOffline();
+
                           Navigator.pop(context);
                           setState(() {
                             availabilityColor = BrandColors.colorOrange;
                             availabilityTitile = 'GO ONLINE';
                             isAvailable = false;
+                            Geofire.removeLocation(currentFirebaseUser!.uid);
 
                             print(isAvailable);
                           });
-                          return;
+                          goOffline();
                         }
                       },
                     ),
@@ -168,17 +195,18 @@ class _HomeTabState extends State<HomeTab> {
 
   void goOffline() {
     Geofire.removeLocation(currentFirebaseUser!.uid);
+    homeTabPositionStream!.cancel();
     tripRequestRef!.onDisconnect();
     tripRequestRef!.remove();
     tripRequestRef = null;
     print("geoLocator $geoLocator");
   }
 
-  void goOnline() {
+  void goOnline() async {
     currentFirebaseUser = FirebaseAuth.instance.currentUser;
-    Geofire.initialize('driversAvailable');
-    Geofire.setLocation(currentFirebaseUser!.uid, currentPosition!.latitude,
-        currentPosition!.longitude);
+    await Geofire.initialize('driversAvailable');
+    await Geofire.setLocation(currentFirebaseUser!.uid,
+        currentPosition!.latitude, currentPosition!.longitude);
     tripRequestRef = FirebaseDatabase.instance
         .reference()
         .child('drivers/${currentFirebaseUser!.uid}/newTrip');
@@ -190,8 +218,10 @@ class _HomeTabState extends State<HomeTab> {
   void getLocationUpdates() {
     homeTabPositionStream = geoLocator!.listen((Position position) {
       currentPosition = position;
-      Geofire.setLocation(
-          currentFirebaseUser!.uid, position.latitude, position.longitude);
+      if (isAvailable) {
+        Geofire.setLocation(
+            currentFirebaseUser!.uid, position.latitude, position.longitude);
+      }
 
       LatLng pos = LatLng(position.latitude, position.longitude);
       mapController!.animateCamera(
