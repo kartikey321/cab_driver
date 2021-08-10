@@ -5,11 +5,10 @@ import 'dart:async';
 import 'package:cab_driver/brand_colors.dart';
 import 'package:cab_driver/datamodels/driver.dart';
 import 'package:cab_driver/globalvariables.dart';
+import 'package:cab_driver/helpers/helperMethods.dart';
 import 'package:cab_driver/notifications.dart';
-import 'package:cab_driver/widgets/TaxiButton.dart';
 import 'package:cab_driver/widgets/availability_button.dart';
 import 'package:cab_driver/widgets/confirm_sheet.dart';
-import 'package:cab_driver/widgets/notification_dialog.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -52,6 +51,7 @@ class _HomeTabState extends State<HomeTab> {
     mapController!.animateCamera(
       CameraUpdate.newLatLng(pos),
     );
+    HelperMethods.getHistoryInfo(context);
   }
 
   void getCurrentDriverInfo() async {
@@ -73,6 +73,8 @@ class _HomeTabState extends State<HomeTab> {
 
     notif(context);
     getCurrentDriverInfo();
+    NotificationsData notificationsData = NotificationsData();
+    var token = notificationsData.getToken();
   }
 
   @override
@@ -209,7 +211,7 @@ class _HomeTabState extends State<HomeTab> {
         currentPosition!.latitude, currentPosition!.longitude);
     tripRequestRef = FirebaseDatabase.instance
         .reference()
-        .child('drivers/${currentFirebaseUser!.uid}/newTrip');
+        .child('drivers/${currentFirebaseUser!.uid}/newtrip');
     tripRequestRef!.set('waiting');
 
     tripRequestRef!.onValue.listen((event) {});

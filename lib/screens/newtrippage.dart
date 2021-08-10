@@ -15,7 +15,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:provider/provider.dart';
 
 class NewTripPage extends StatefulWidget {
   final TripDetails? tripDetails;
@@ -292,7 +291,7 @@ class _NewTripPageState extends State<NewTripPage> {
 
     DatabaseReference historyRef = FirebaseDatabase.instance
         .reference()
-        .child('drivers/${currentFirebaseUser!.uid}/history');
+        .child('drivers/${currentFirebaseUser!.uid}/history/$rideId');
     historyRef.set(true);
   }
 
