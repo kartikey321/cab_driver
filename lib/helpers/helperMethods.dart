@@ -89,9 +89,9 @@ class HelperMethods {
     DatabaseReference earningRef = FirebaseDatabase.instance
         .reference()
         .child('drivers/${currentFirebaseUser!.uid}/earnings');
-    earningRef.once().then((DataSnapshot snapshot) {
-      if (snapshot.value != null) {
-        String earnings = snapshot.value.toString();
+    earningRef.once().then((data) {
+      if (data.snapshot.value != null) {
+        String earnings = data.snapshot.value.toString();
         Provider.of<AppData>(context, listen: false).updateEarnings(earnings);
       }
     });
@@ -99,9 +99,10 @@ class HelperMethods {
     DatabaseReference historyRef = FirebaseDatabase.instance
         .reference()
         .child('drivers/${currentFirebaseUser!.uid}/history');
-    historyRef.once().then((DataSnapshot snapshot) {
+    historyRef.once().then((data) {
+      var snapshot = data.snapshot;
       if (snapshot.value != null) {
-        Map<dynamic, dynamic> values = snapshot.value;
+        Map<dynamic, dynamic> values = snapshot.value as Map<String, dynamic>;
         print(values);
         int tripCount = values.length;
 
@@ -128,9 +129,9 @@ class HelperMethods {
     for (String key in keys) {
       DatabaseReference historyRef =
           FirebaseDatabase.instance.reference().child('rideRequest/$key');
-      historyRef.once().then((DataSnapshot snapshot) {
-        if (snapshot.value != null) {
-          var history = History.fromSnapshot(snapshot);
+      historyRef.once().then((data) {
+        if (data.snapshot.value != null) {
+          var history = History.fromSnapshot(data.snapshot);
           Provider.of<AppData>(context, listen: false)
               .updateTrpHistory(history);
           print(history.destination);

@@ -16,7 +16,8 @@ import 'package:provider/provider.dart';
 const AndroidNotificationChannel channel = AndroidNotificationChannel(
     'new_email_arrived', // id
     'High Importance Notifications', // title
-    'This channel is used for important notifications.', // description
+    description:
+        'This channel is used for important notifications.', // description
     importance: Importance.high,
     playSound: true);
 

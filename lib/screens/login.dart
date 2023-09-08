@@ -49,8 +49,8 @@ class _LoginPageState extends State<LoginPage> {
         DatabaseReference userRef =
             FirebaseDatabase.instance.reference().child('drivers/${user.uid}');
 
-        userRef.once().then((DataSnapshot snapshot) => {
-              if (snapshot.value != null)
+        userRef.once().then((data) => {
+              if (data.snapshot.value != null)
                 {
                   Navigator.pushNamedAndRemoveUntil(
                       context, MainPage.id, (route) => false)
@@ -74,7 +74,7 @@ class _LoginPageState extends State<LoginPage> {
         style: TextStyle(fontSize: 15),
       ),
     );
-    scaffoldKey.currentState!.showSnackBar(snackBar);
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   @override

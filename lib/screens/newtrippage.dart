@@ -48,8 +48,6 @@ class _NewTripPageState extends State<NewTripPage> {
   Color buttonColor = BrandColors.colorGreen;
 
   var geoLocator = Geolocator();
-  var locationOptions =
-      LocationOptions(accuracy: LocationAccuracy.bestForNavigation);
 
   BitmapDescriptor? movingMarkerIcon;
 
@@ -299,7 +297,8 @@ class _NewTripPageState extends State<NewTripPage> {
     LatLng oldPosition = LatLng(0, 0);
 
     ridePositionStream = Geolocator.getPositionStream(
-            desiredAccuracy: LocationAccuracy.bestForNavigation)
+            locationSettings:
+                LocationSettings(accuracy: LocationAccuracy.bestForNavigation))
         .listen((Position position) {
       myPosition = position;
       currentPosition = position;
@@ -515,7 +514,8 @@ class _NewTripPageState extends State<NewTripPage> {
     DatabaseReference earningsRef = FirebaseDatabase.instance
         .reference()
         .child('drivers/${currentFirebaseUser!.uid}/earnings');
-    earningsRef.once().then((DataSnapshot snapshot) {
+    earningsRef.once().then((data) {
+      var snapshot = data.snapshot;
       print(snapshot);
       if (snapshot.value != null) {
         double oldEarnings = double.parse(snapshot.value.toString());

@@ -8,13 +8,22 @@ import 'package:flutter/material.dart';
 
 import 'mainpage.dart';
 
-class VehicleInfo extends StatelessWidget {
+class VehicleInfo extends StatefulWidget {
   static const String id = 'vehicle_info';
 
+  @override
+  State<VehicleInfo> createState() => _VehicleInfoState();
+}
+
+class _VehicleInfoState extends State<VehicleInfo> {
   var carModelController = TextEditingController();
+
   var carColorController = TextEditingController();
+
   var vehicleNumberController = TextEditingController();
+
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+
   void showSnackbar(String title) {
     final snackBar = SnackBar(
       content: Text(
@@ -23,7 +32,7 @@ class VehicleInfo extends StatelessWidget {
         style: TextStyle(fontSize: 15),
       ),
     );
-    scaffoldKey.currentState!.showSnackBar(snackBar);
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   void updateProfile(context) {

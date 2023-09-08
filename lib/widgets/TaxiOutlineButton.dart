@@ -1,7 +1,8 @@
 // ignore_for_file: file_names, unnecessary_new, prefer_const_constructors
 
-import 'package:cab_driver/brand_colors.dart';
 import 'package:flutter/material.dart';
+
+import '../brand_colors.dart';
 
 class TaxiOutlineButton extends StatelessWidget {
   final String? title;
@@ -12,14 +13,16 @@ class TaxiOutlineButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return OutlineButton(
-        borderSide: BorderSide(color: color!),
-        shape: new RoundedRectangleBorder(
-          borderRadius: new BorderRadius.circular(25.0),
-        ),
+    return OutlinedButton(
         onPressed: onPressed,
-        color: color,
-        textColor: color,
+        style: OutlinedButton.styleFrom(
+          side: BorderSide(color: color!),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(25.0),
+          ),
+          backgroundColor: color,
+          foregroundColor: color, // Text color
+        ),
         child: Container(
           height: 50.0,
           child: Center(

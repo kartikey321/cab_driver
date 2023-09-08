@@ -162,7 +162,8 @@ class NotificationDialog extends StatelessWidget {
     DatabaseReference newRideRef = FirebaseDatabase.instance
         .reference()
         .child('drivers/${currentFirebaseUser!.uid}/newtrip');
-    newRideRef.once().then((DataSnapshot snapshot) {
+    newRideRef.once().then((data) {
+      var snapshot = data.snapshot;
       Navigator.pop(context);
       Navigator.pop(context);
       String thisRideId = "";

@@ -16,6 +16,8 @@ import 'package:flutter_geofire/flutter_geofire.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import '../helpers/location_helper.dart';
+
 class HomeTab extends StatefulWidget {
   const HomeTab({Key? key}) : super(key: key);
 
@@ -30,8 +32,7 @@ class _HomeTabState extends State<HomeTab> {
   DatabaseReference? tripRequestRef;
 
   //var geoLocator = Geolocator();
-  var locationOptions = LocationOptions(
-      accuracy: LocationAccuracy.bestForNavigation, distanceFilter: 4);
+  var locationOptions = determinePosition();
   Stream<Position>? geoLocator;
 
   String? availabilityTitile = 'GO ONLINE';
@@ -59,9 +60,9 @@ class _HomeTabState extends State<HomeTab> {
     DatabaseReference driverRef = FirebaseDatabase.instance
         .reference()
         .child('drivers/${currentFirebaseUser!.uid}');
-    driverRef.once().then((DataSnapshot snapshot) {
-      if (snapshot.value != null) {
-        currentDriverInfo = Driver.fromSnapshot(snapshot);
+    driverRef.once().then((data) {
+      if (data.snapshot.value != null) {
+        currentDriverInfo = Driver.fromSnapshot(data.snapshot);
       }
     });
   }
@@ -121,8 +122,9 @@ class _HomeTabState extends State<HomeTab> {
                       onPressed: () {
                         if (!isAvailable) {
                           geoLocator = Geolocator.getPositionStream(
-                              desiredAccuracy:
-                                  LocationAccuracy.bestForNavigation);
+                              locationSettings: LocationSettings(
+                                  accuracy:
+                                      LocationAccuracy.bestForNavigation));
                           Navigator.pop(context);
 
                           setState(() {

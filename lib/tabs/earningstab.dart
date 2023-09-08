@@ -37,8 +37,11 @@ class EarningsTab extends StatelessWidget {
             ),
           ),
         ),
-        FlatButton(
-          padding: EdgeInsets.all(0),
+        TextButton(
+          style: ButtonStyle(
+            padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+                EdgeInsets.all(0)),
+          ),
           onPressed: () {
             Navigator.push(
               context,

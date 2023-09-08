@@ -30,7 +30,7 @@ void notif(context) async {
             android: AndroidNotificationDetails(
               channel.id,
               channel.name,
-              channel.description,
+              channelDescription: channel.description,
               color: Colors.blue,
               playSound: true,
               icon: '@mipmap/ic_launcher',
@@ -83,8 +83,9 @@ class NotificationsData {
               status: 'Fetching Details... ',
             ));
     DatabaseReference rideRef =
-        FirebaseDatabase.instance.reference().child('rideRequest/$rideId');
-    rideRef.once().then((DataSnapshot snapshot) {
+        FirebaseDatabase.instance.ref().child('rideRequest/$rideId');
+    rideRef.once().then((data) {
+      var snapshot = data.snapshot;
       Navigator.pop(context);
       print(rideId);
       print(snapshot.value);
@@ -93,22 +94,21 @@ class NotificationsData {
           Audio('assets/sounds/alert.mp3'),
         );
         assetsAudioPlayer.play();
-
+        var data1 = snapshot.value as Map<String, dynamic>;
         double pickupLat =
-            double.parse(snapshot.value['location']['latitude'].toString());
+            double.parse(data1['location']['latitude'].toString());
         double pickupLng =
-            double.parse(snapshot.value['location']['longitude'].toString());
-        String pickupAddress = snapshot.value['pickup_address'].toString();
+            double.parse(data1['location']['longitude'].toString());
+        String pickupAddress = data1['pickup_address'].toString();
 
         double destinationLat =
-            double.parse(snapshot.value['destination']['latitude'].toString());
+            double.parse(data1['destination']['latitude'].toString());
         double destinationLng =
-            double.parse(snapshot.value['destination']['longitude'].toString());
-        String destinationAddress =
-            snapshot.value['destination_address'].toString();
-        String paymentMethod = snapshot.value['payment_method'];
-        String riderName = snapshot.value['rider_name'];
-        String riderPhone = snapshot.value['rider_phone'];
+            double.parse(data1['destination']['longitude'].toString());
+        String destinationAddress = data1['destination_address'].toString();
+        String paymentMethod = data1['payment_method'];
+        String riderName = data1['rider_name'];
+        String riderPhone = data1['rider_phone'];
 
         TripDetails tripDetails = TripDetails();
         tripDetails.rideId = rideId;

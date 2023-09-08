@@ -20,11 +20,12 @@ class Driver {
 
   Driver.fromSnapshot(DataSnapshot snapshot) {
     id = snapshot.key;
-    phone = snapshot.value['phone'];
-    email = snapshot.value['email'];
-    fullname = snapshot.value['fullname'];
-    carModel = snapshot.value['vehicle_details']['car_model'];
-    carColor = snapshot.value['vehicle_details']['car_color'];
-    vehicleNumber = snapshot.value['vehicle_details']['vehicle_number'];
+    var data = snapshot.value as Map<dynamic, dynamic>?;
+    phone = data!['phone'];
+    email = data['email'];
+    fullname = data['fullname'];
+    carModel = data['vehicle_details']['car_model'];
+    carColor = data['vehicle_details']['car_color'];
+    vehicleNumber = data['vehicle_details']['vehicle_number'];
   }
 }
